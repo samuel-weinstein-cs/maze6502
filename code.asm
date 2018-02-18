@@ -36,6 +36,7 @@ loop:
 	sta prevH
 	jsr movRand
 	jsr checkCollision
+	jsr selfCollision
 	ldy #0 ;draw to the screen{
 	lda #$01
 	sta ($00),y ;draw to the screen}
@@ -132,4 +133,9 @@ reset:
 	sta posL
 	lda prevH
 	sta posH
+	rts
+selfCollision:
+	ldy #$00
+	lda (posL),y
+	bne reset
 	rts
