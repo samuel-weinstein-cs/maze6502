@@ -8,20 +8,21 @@ define sysRandom $fe
 lda sysRandom
 lsr A; aligning pos horizontally
 asl A
+sta posL
 sta argA
 lda #$20
 sta argB
 jsr div
-beq store
+sta argA
+lda #$04
+sta argB
+jsr mod
+beq high_byte
 cmp #$02
-beq store
-lda argA
+beq high_byte
+lda posL
 sec
 sbc #$20
-sta posL
-jmp high_byte
-store:
-lda argA
 sta posL
 high_byte:
 lda sysRandom
