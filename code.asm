@@ -6,7 +6,16 @@ define argA $10
 define argB $11
 define sysRandom $fe
 lda sysRandom
-sta posL
+lsr a; aligning pos horizontally
+asl a
+sta argA
+lda #$20
+jsr div
+beq high_byte
+cmp #$02
+beq high_byte
+
+high_byte:
 lda sysRandom
 cmp #$80 ; code for generating a random starting position
 bcc lt ; jump if sysrandom was less than $80
@@ -73,7 +82,7 @@ rlt:
 up:
 	sec
 	lda posL
-	sbc #$20
+	sbc #$40
 	sta posL
 	lda posH
 	sbc #$00
@@ -82,7 +91,7 @@ up:
 right:
 	clc
 	lda posL
-	adc #$01
+	adc #$02
 	sta posL
 	lda posH
 	adc #$00
@@ -91,7 +100,7 @@ right:
 down:
 	clc
 	lda posL
-	adc #$20
+	adc #$40
 	sta posL
 	lda posH
 	adc #$00
@@ -100,7 +109,7 @@ down:
 left:
 	sec
 	lda posL
-	sbc #$01
+	sbc #$02
 	sta posL
 	lda posH
 	sbc #$00
