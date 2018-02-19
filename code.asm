@@ -2,6 +2,7 @@ define posL $00
 define posH $01
 define prevL $02
 define prevH $03
+define dir $04
 define argA $10
 define argB $11
 define sysRandom $fe
@@ -55,9 +56,49 @@ loop:
 	jsr movRand
 	jsr checkCollision
 	jsr selfCollision
-	ldy #0 ;draw to the screen{
+	lda dir ;draw to the screen
+	lsr
+	bcs u
+	lsr
+	bcs r
+	lsr
+	bcs d
+	lsr
+	bcs l
+	jmp loop
+u:
+	lda posL
+	clc
+	adc #$20
+	sta prevL
+	lda posH
+	adc #0
+	sta prevH
+	jmp draw
+r:
+	lda posL
+	sec
+	sbc #$01
+	sta prevL
+	jmp draw
+d:
+	lda posL
+	sec
+	sbc #$20
+	sta prevL
+	lda posH
+	sbc #0
+	sta prevH
+	jmp draw
+l:
+	lda posL
+	clc
+	adc #$01
+	sta prevL
+draw:
+	ldy #0 
 	lda #$01
-	sta ($00),y ;draw to the screen}
+	sta ($00),y
 	jmp loop
 mod:
 	lda argA
@@ -96,6 +137,8 @@ up:
 	lda posH
 	sbc #$00
 	sta posH
+	lda #$01
+	sta dir
 	rts
 right:
 	clc
@@ -105,6 +148,8 @@ right:
 	lda posH
 	adc #$00
 	sta posH
+	lda #$02
+	sta dir
 	rts
 down:
 	clc
@@ -114,6 +159,8 @@ down:
 	lda posH
 	adc #$00
 	sta posH
+	lda #$04
+	sta dir
 	rts
 left:
 	sec
@@ -123,6 +170,8 @@ left:
 	lda posH
 	sbc #$00
 	sta posH
+	lda #$08
+	sta dir
 	rts
 checkCollision:
 	lda posH
@@ -151,6 +200,8 @@ reset:
 	sta posL
 	lda prevH
 	sta posH
+	lda #0
+	sta dir
 	rts
 selfCollision:
 	ldy #$00
