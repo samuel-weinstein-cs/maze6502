@@ -6,15 +6,23 @@ define argA $10
 define argB $11
 define sysRandom $fe
 lda sysRandom
-lsr a; aligning pos horizontally
-asl a
+lsr A; aligning pos horizontally
+asl A
 sta argA
 lda #$20
+sta argB
 jsr div
-beq high_byte
+beq store
 cmp #$02
-beq high_byte
-
+beq store
+lda argA
+sec
+sbc #$20
+sta posL
+jmp high_byte
+store:
+lda argA
+sta posL
 high_byte:
 lda sysRandom
 cmp #$80 ; code for generating a random starting position
@@ -132,9 +140,9 @@ checkCollision:
 	jsr mod
 	sec
 	sbc $20
-	cmp #$1f
+	cmp #$1e
 	beq reset
-	cmp #$e1
+	cmp #$e2
 	beq reset
 	rts
 reset:
