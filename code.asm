@@ -98,7 +98,8 @@ l:
 draw:
 	ldy #0 
 	lda #$01
-	sta ($00),y
+	sta (posL),y
+	sta (prevL),y
 	jmp loop
 mod:
 	lda argA
