@@ -117,6 +117,7 @@ draw:
 	lda #$01
 	sta (posL),y
 	sta (prevL),y
+	brk
 	jmp loop
 mod:
 	lda argA
