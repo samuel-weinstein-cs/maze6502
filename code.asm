@@ -5,7 +5,11 @@ define prevH $03
 define dir $04
 define argA $10
 define argB $11
+define mazePointerL $50
+define mazePointerH $51
 define sysRandom $fe
+lda #$08; initialize mazepointer
+sta mazePointerH
 lda sysRandom
 lsr A; aligning pos horizontally
 asl A
@@ -49,15 +53,28 @@ lda #$02
 sta posH
 jmp loop
 loop:
+	ldy #$00
 	lda posL
+	sta (mazePointerL),y
+	ldy #$01
 	sta prevL
 	lda posH
+	sta (mazePointerL),y
 	sta prevH
 	jsr movRand
 	jsr checkCollision
 	jsr selfCollision
-	lda dir ;draw to the screen
-	lsr
+	lda dir
+	beq loop
+	clc
+	lda mazePointerL
+	adc #$02
+	sta mazePointerL
+	lda mazePointerH
+	adc #$00
+	sta mazePointerH
+	lda dir
+	lsr;draw to the screen
 	bcs u
 	lsr
 	bcs r
