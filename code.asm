@@ -65,7 +65,7 @@ loop:
 	jsr checkCollision
 	jsr selfCollision
 	lda dir
-	beq loop
+	beq pop
 	clc
 	lda mazePointerL
 	adc #$02
@@ -117,7 +117,21 @@ draw:
 	lda #$01
 	sta (posL),y
 	sta (prevL),y
-	brk
+	jmp loop
+pop:
+	sec
+	lda mazePointerL
+	sbc #$02
+	sta mazePointerL
+	lda mazePointerH
+	sbc #$00
+	sta mazePointerH
+	ldy #$00
+	lda (mazePointerL),y
+	sta posL
+	ldy #$01
+	lda (mazePointerL),y
+	sta posH
 	jmp loop
 mod:
 	lda argA
