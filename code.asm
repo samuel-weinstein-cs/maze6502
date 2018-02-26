@@ -8,6 +8,7 @@ define argB $11
 define mazePointerL $50
 define mazePointerH $51
 define sysRandom $fe
+define popClear $0f
 lda #$08; initialize mazepointer
 sta mazePointerH
 lda sysRandom
@@ -65,7 +66,7 @@ loop:
 	jsr checkCollision
 	jsr selfCollision
 	lda dir
-	beq pop
+	beq testSides
 	clc
 	lda mazePointerL
 	adc #$02
@@ -118,6 +119,13 @@ draw:
 	sta (posL),y
 	sta (prevL),y
 	jmp loop
+testSides:
+	lda posL
+	sta prevL
+	lda posH
+	sta prevH
+	jsr checkCollision
+	
 pop:
 	sec
 	lda mazePointerL
@@ -227,8 +235,12 @@ checkCollision:
 	beq reset
 	cmp #$e2
 	beq reset
+	lda #$00
+	sta popClear
 	rts
 reset:
+	lda #$01
+	sta popClear
 	lda prevL
 	sta posL
 	lda prevH
