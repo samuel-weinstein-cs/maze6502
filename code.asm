@@ -3,12 +3,16 @@ define posH $01
 define prevL $02
 define prevH $03
 define dir $04
+define testPointerL $05
+define testPointerH $06
+define cpL $07
+define cpH $08
+define popBool $09
 define argA $10
 define argB $11
 define mazePointerL $50
 define mazePointerH $51
 define sysRandom $fe
-define testPointer $05
 lda #$08; initialize mazepointer
 sta mazePointerH
 lda sysRandom
@@ -120,12 +124,93 @@ draw:
 	sta (prevL),y
 	jmp loop
 testSides:
-	lda testPointer
+	lda #$00
+	sta popBool
+	sec
+	lda posL
+	sbc #$20
+	sta cpL
+	lda posH
+	sbc #$00
+	sta cpH
+	ldy #$01
+	cmp (testPointerH),y
+	bne endU
+	lda cpL
+	ldy #$00
+	cmp (testPointerL),y
+	bne endU
+	lda #$01
+	sta popBool
+endU:
+	lda #$00
+	sta popBool
+	clc
+	lda posL
+	adc #$01
+	sta cpL
+	lda posH
+	adc #$00
+	sta cpH
+	ldy #$01
+	cmp (testPointerH),y
+	bne endR
+	lda cpL
+	ldy #$00
+	cmp (testPointerL),y
+	bne endR
+	lda #$01
+	sta popBool
+endR:
+	lda #$00
+	sta popBool
+	clc
+	lda posL
+	adc #$20
+	sta cpL
+	lda posH
+	adc #$00
+	sta cpH
+	ldy #$01
+	cmp (testPointerH),y
+	bne endD
+	lda cpL
+	ldy #$00
+	cmp (testPointerL),y
+	bne endD
+	lda #$01
+	sta popBool
+endD:
+	lda #$00
+	sta popBool
+	sec
+	lda posL
+	sbc #$01
+	sta cpL
+	lda posH
+	sbc #$00
+	sta cpH
+	ldy #$01
+	cmp (testPointerH),y
+	bne endL
+	lda cpL
+	ldy #$00
+	cmp (testPointerL),y
+	bne endL
+	lda #$01
+	sta popBool
+	jmp endDir
+endL:
+	lda #$00
+	sta popBool
+endDir:
+	lda popBool
+	
+	lda testPointerL
 	cmp mazePointerL
 	beq testSides
 	bcc testSides
-	
-	
+	jmp loop
 pop:
 	sec
 	lda mazePointerL
