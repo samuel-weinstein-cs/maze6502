@@ -3,11 +3,8 @@ define posH $01
 define prevL $02
 define prevH $03
 define dir $04
-define testPointerL $05
-define testPointerH $06
 define cpL $07
 define cpH $08
-define popBool $09
 define argA $10
 define argB $11
 define mazePointerL $50
@@ -125,94 +122,56 @@ draw:
 	sta (prevL),y
 	jmp loop
 testSides:
-	lda #$00
-	sta popBool
-	sta testPointerL
-testLoop:
+	lda posL
+	sta prevL
+	lda posH
+	sta prevH
 	sec
 	lda posL
-	sbc #$20
+	sbc #$40 ;up
 	sta cpL
 	lda posH
 	sbc #$00
 	sta cpH
-	ldy #$01
-	cmp (testPointerH),y
-	bne endU
-	lda cpL
 	ldy #$00
-	cmp (testPointerL),y
-	bne endU
-	lda popBool
-	ora #$01
-	sta popBool
-endU:
+	lda (cpL),y
+	beq jumpLoop
+	
 	clc
 	lda posL
-	adc #$01
+	adc #$02 ;right
 	sta cpL
 	lda posH
 	adc #$00
 	sta cpH
-	ldy #$01
-	cmp (testPointerH),y
-	bne endR
-	lda cpL
 	ldy #$00
-	cmp (testPointerL),y
-	bne endR
-	lda popBool
-	ora #$02
-	sta popBool
-endR:
+	lda (cpL),y
+	beq jumpLoop
+	
 	clc
 	lda posL
-	adc #$20
+	adc #$40 ;down
 	sta cpL
 	lda posH
 	adc #$00
 	sta cpH
-	ldy #$01
-	cmp (testPointerH),y
-	bne endD
-	lda cpL
 	ldy #$00
-	cmp (testPointerL),y
-	bne endD
-	lda popBool
-	ora #$04
-	sta popBool
-endD:
+	lda (cpL),y
+	beq jumpLoop
+	
 	sec
 	lda posL
-	sbc #$01
+	sbc #$02 ;left
 	sta cpL
 	lda posH
 	sbc #$00
 	sta cpH
-	ldy #$01
-	cmp (testPointerH),y
-	bne endDir
-	lda cpL
 	ldy #$00
-	cmp (testPointerL),y
-	bne endDir
-	lda #$01
-	lda popBool
-	ora #$08
-	sta popBool
-endDir:
-	lda popBool
-	cmp #$0f
-	beq pop
-	inc testPointerL
-	lda testPointerL
-	cmp mazePointerL
-	beq jumpTestSides
-	bcc jumpTestSides
+	lda (cpL),y
+	beq jumpLoop
+	jmp pop
+jumpLoop:
 	jmp loop
-jumpTestSides:
-	jmp testLoop
 pop:
 	sec
 	lda mazePointerL
