@@ -13,8 +13,9 @@ define argB $11
 define mazePointerL $50
 define mazePointerH $51
 define sysRandom $fe
-lda #$08; initialize mazepointer
+lda #$09; initialize mazepointer
 sta mazePointerH
+sta testPointerH
 lda sysRandom
 lsr A; aligning pos horizontally
 asl A
@@ -126,6 +127,8 @@ draw:
 testSides:
 	lda #$00
 	sta popBool
+	sta testPointerL
+testLoop:
 	sec
 	lda posL
 	sbc #$20
@@ -140,11 +143,10 @@ testSides:
 	ldy #$00
 	cmp (testPointerL),y
 	bne endU
-	lda #$01
+	lda popBool
+	ora #$01
 	sta popBool
 endU:
-	lda #$00
-	sta popBool
 	clc
 	lda posL
 	adc #$01
@@ -159,11 +161,10 @@ endU:
 	ldy #$00
 	cmp (testPointerL),y
 	bne endR
-	lda #$01
+	lda popBool
+	ora #$02
 	sta popBool
 endR:
-	lda #$00
-	sta popBool
 	clc
 	lda posL
 	adc #$20
@@ -178,11 +179,10 @@ endR:
 	ldy #$00
 	cmp (testPointerL),y
 	bne endD
-	lda #$01
+	lda popBool
+	ora #$04
 	sta popBool
 endD:
-	lda #$00
-	sta popBool
 	sec
 	lda posL
 	sbc #$01
@@ -192,25 +192,27 @@ endD:
 	sta cpH
 	ldy #$01
 	cmp (testPointerH),y
-	bne endL
+	bne endDir
 	lda cpL
 	ldy #$00
 	cmp (testPointerL),y
-	bne endL
+	bne endDir
 	lda #$01
-	sta popBool
-	jmp endDir
-endL:
-	lda #$00
+	lda popBool
+	ora #$08
 	sta popBool
 endDir:
 	lda popBool
-	
+	cmp #$0f
+	beq pop
+	inc testPointerL
 	lda testPointerL
 	cmp mazePointerL
-	beq testSides
-	bcc testSides
+	beq jumpTestSides
+	bcc jumpTestSides
 	jmp loop
+jumpTestSides:
+	jmp testLoop
 pop:
 	sec
 	lda mazePointerL
