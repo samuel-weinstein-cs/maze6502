@@ -3,8 +3,9 @@ define posH $01
 define prevL $02
 define prevH $03
 define dir $04
-define cpL $07
-define cpH $08
+define cpL $05
+define cpH $06
+define popBool #$07
 define argA $10
 define argB $11
 define mazePointerL $50
@@ -12,7 +13,6 @@ define mazePointerH $51
 define sysRandom $fe
 lda #$09; initialize mazepointer
 sta mazePointerH
-sta testPointerH
 lda sysRandom
 lsr A; aligning pos horizontally
 asl A
@@ -126,6 +126,8 @@ testSides:
 	sta prevL
 	lda posH
 	sta prevH
+	lda #$00
+	sta popBool
 	sec
 	lda posL
 	sbc #$40 ;up
@@ -136,7 +138,13 @@ testSides:
 	ldy #$00
 	lda (cpL),y
 	beq jumpLoop
-	
+	lda cpH
+	cmp #$01
+	bne testR
+	lda #$01
+	ora popBool
+	sta popBool
+testR:
 	clc
 	lda posL
 	adc #$02 ;right
@@ -158,7 +166,13 @@ testSides:
 	ldy #$00
 	lda (cpL),y
 	beq jumpLoop
-	
+	lda cpH
+	cmp #$06
+	bne testL
+	lda #$04
+	ora popBool
+	sta popBool
+testL:
 	sec
 	lda posL
 	sbc #$02 ;left
@@ -169,6 +183,9 @@ testSides:
 	ldy #$00
 	lda (cpL),y
 	beq jumpLoop
+	lda popBool
+	bne jumpLoop
+
 	jmp pop
 jumpLoop:
 	jmp loop
